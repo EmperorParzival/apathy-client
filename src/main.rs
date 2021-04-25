@@ -36,7 +36,7 @@ async fn launch_roblox(token: String) -> Result<impl warp::Reply, warp::Rejectio
 #[tokio::main]
 #[allow(unused_must_use)]
 async fn main() -> Result<(), warp::Rejection> {
-	multiple_roblox::setup();
+	// multiple_roblox::setup();
 
 	let default = warp::get().and(warp::path::param()).and_then(launch_roblox);
 	let handler =
