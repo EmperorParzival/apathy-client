@@ -4,8 +4,6 @@ heya guys
 
 ## Usage
 
-***
-
 1. Order a popcorn ticket using Apathy's Discord bot.
 2. If you haven't already, open the popcorn client. This will allow you to use the ticket.
 3. Visit the URL provided in the ticket. If it is valid, the local server will automatically launch
@@ -14,8 +12,6 @@ a roblox instance.
 closing all but one open roblox instance.
 
 ## FAQs
-
-***
 
 1. **What even is this?**
 If you haven't heard of or aren't affiliated with Apathy's popcorn system, don't worry about it :)
@@ -36,8 +32,6 @@ all of this repository's code in the near future. As per the license, you may al
 the code available here to build your own client that interfaces with Apathy's popcorn system.
 
 ## License
-
-***
 
 This code is licensed under the Mozilla Public License Version 2.0. For more information, see the
 LICENSE file.
