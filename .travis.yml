@@ -5,11 +5,10 @@ rust:
   - nightly
 
 script:
-  - cargo build --verbose --features=cli
-  - cargo test --verbose --features=cli
+  - cargo build --verbose
+  - cargo test --verbose
 
 cache: cargo
-
 jobs:
   allow_failures:
     - rust: nightly
