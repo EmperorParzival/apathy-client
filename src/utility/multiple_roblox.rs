@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::{ffi::OsStr, path::Path};
 use winapi::um::{minwinbase, synchapi, winnt};
 
