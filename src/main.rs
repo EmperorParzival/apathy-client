@@ -1,7 +1,7 @@
 pub mod error;
 mod utility;
 
-use utility::{multiple_roblox, request};
+use utility::request;
 use warp::Filter;
 
 async fn launch_roblox(token: String) -> Result<impl warp::Reply, warp::Rejection> {
@@ -34,7 +34,6 @@ async fn launch_roblox(token: String) -> Result<impl warp::Reply, warp::Rejectio
 }
 
 #[tokio::main]
-#[allow(unused_must_use)]
 async fn main() -> Result<(), warp::Rejection> {
 	// multiple_roblox::setup();
 
