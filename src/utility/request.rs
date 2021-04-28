@@ -2,22 +2,20 @@ use crate::error::ApathyError;
 
 use hyper::{
 	body::{self, Buf},
-	client::HttpConnector,
 	http::HeaderValue,
 	Body,
 	Request,
 };
-use hyper_tls::HttpsConnector;
-use std::str::FromStr;
+use std::{process::Command, str::FromStr};
 
-fn create_client() -> hyper::Client<HttpsConnector<HttpConnector>> {
-	let https = HttpsConnector::new();
+type Client = hyper::Client<hyper_tls::HttpsConnector<hyper::client::HttpConnector>>;
 
-	hyper::Client::builder().build::<_, Body>(https)
-}
-
-async fn request_header(request: Request<Body>, header: &str) -> Result<HeaderValue, ApathyError> {
-	let response = create_client().request(request).await?;
+async fn request_header(
+	request: Request<Body>,
+	header: &str,
+	client: Client,
+) -> Result<HeaderValue, ApathyError> {
+	let response = client.request(request).await?;
 	let headers = response.headers();
 
 	if headers.contains_key(header) {
@@ -30,7 +28,7 @@ async fn request_header(request: Request<Body>, header: &str) -> Result<HeaderVa
 	}
 }
 
-async fn get_auth_ticket(cookie: String) -> Result<HeaderValue, ApathyError> {
+async fn get_auth_ticket(cookie: String, client: Client) -> Result<HeaderValue, ApathyError> {
 	let csrf_token = request_header(
 		Request::builder()
 			.method(hyper::Method::POST)
@@ -39,6 +37,7 @@ async fn get_auth_ticket(cookie: String) -> Result<HeaderValue, ApathyError> {
 			.header("Cookie", &cookie)
 			.body(Body::empty())?,
 		"X-CSRF-Token",
+		client.clone(),
 	)
 	.await?;
 
@@ -52,6 +51,7 @@ async fn get_auth_ticket(cookie: String) -> Result<HeaderValue, ApathyError> {
 			.header("Cookie", cookie)
 			.body(Body::empty())?,
 		"rbx-authentication-ticket",
+		client,
 	)
 	.await
 }
@@ -64,29 +64,56 @@ struct Popcorn {
 	cookie: String,
 }
 
-pub async fn get_launch_info(token: String) -> Result<String, ApathyError> {
-	let uri = format!("https://eclipsis-alt-gen.herokuapp.com/getToken/{}", token);
-	let response = create_client().get(hyper::Uri::from_str(&uri)?).await?;
+pub async fn launch_roblox(token: String) -> Result<(), ApathyError> {
+	let https = hyper_tls::HttpsConnector::new();
+	let client = hyper::Client::builder().build::<_, Body>(https);
 
-	let content = body::aggregate(response).await?;
-	let result: Popcorn = serde_json::from_reader(content.reader())?;
+	let token_uri = format!("https://eclipsis-alt-gen.herokuapp.com/getToken/{}", token);
+	let token_resp = client.get(hyper::Uri::from_str(&token_uri)?).await?;
+	let token: Popcorn = serde_json::from_reader(body::aggregate(token_resp).await?.reader())?;
 
-	if !result.success {
-		return Err(ApathyError::PopcornError(result.error));
+	// NOTE: assert!() causes unnecessary errors when  multiple requests?? rust?????
+	// assert!(token.success, "{}", token.error);
+
+	if !token.success {
+		return Err(ApathyError::PopcornError(token.error));
 	}
 
-	let auth_ticket = get_auth_ticket(format!(".ROBLOSECURITY={}", result.cookie)).await?;
-	let url_components = vec![
-        String::from("roblox-player:1"),
-        String::from("launchmode:play"),
-        format!("gameinfo:{}", auth_ticket.to_str()?),
-        format!("launchtime:{}", chrono::Utc::now().timestamp_millis()),
-        format!("placelauncherurl:https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=RequestGame&browserTrackerId=1147338376&placeId={}&isPlayTogetherGame=true", result.place_id),
-        String::from("browsertrackerid:1480614826"),
-        String::from("robloxLocale:en_us"),
-        String::from("gameLocale:en_us"),
-        String::from("channel:")
-    ];
+	let version_uri = "http://setup.roblox.com/version.txt";
+	let version_resp = client.get(hyper::Uri::from_static(version_uri)).await?;
+	let version = String::from_utf8(body::to_bytes(version_resp).await?.to_vec())?;
 
-	Ok(url_components.join("+"))
+	let mut roblox_dir = dirs::data_local_dir().expect("Failed to read AppData\\Local");
+	roblox_dir.push(format!(
+		"Roblox\\Versions\\{}\\RobloxPlayerBeta.exe",
+		version
+	));
+
+	assert!(
+		roblox_dir.is_file(),
+		"Failed to find launcher - is your roblox updated?"
+	);
+
+	Command::new(roblox_dir.into_os_string())
+		.args(&[
+			"--play",
+			"-a",
+			"https://auth.roblox.com/v1/authentication-ticket/redeem",
+			"-t",
+			get_auth_ticket(format!(".ROBLOSECURITY={}", token.cookie), client).await?.to_str()?,
+			"-j",
+			&format!("https://assetgame.roblox.com/game/PlaceLauncher.ashx?request=RequestGame&browserTrackerId=1147338376&placeId={}&isPlayTogetherGame=true", token.place_id),
+			"-b",
+			"1147338376",
+			"--launchtime",
+			&chrono::Utc::now().timestamp_millis().to_string(),
+			"--rloc",
+			"en_us",
+			"--gloc",
+			"en_us",
+		])
+		.spawn()
+		.expect("Failed to launch RobloxPlayerBeta.exe");
+
+	Ok(())
 }
