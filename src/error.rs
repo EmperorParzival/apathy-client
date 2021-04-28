@@ -2,7 +2,10 @@ use hyper::{
 	header::ToStrError,
 	http::{uri::InvalidUri, Error},
 };
-use std::fmt::{self, Display, Formatter};
+use std::{
+	fmt::{self, Display, Formatter},
+	string::FromUtf8Error,
+};
 
 #[derive(Debug)]
 pub enum ApathyError {
@@ -12,6 +15,7 @@ pub enum ApathyError {
 	RequestError(hyper::Error),
 	HeaderConversionError(ToStrError),
 	DeserializeError(serde_json::Error),
+	StringConversionError(FromUtf8Error),
 }
 
 impl Display for ApathyError {
@@ -53,5 +57,11 @@ impl From<ToStrError> for ApathyError {
 impl From<serde_json::Error> for ApathyError {
 	fn from(err: serde_json::Error) -> Self {
 		ApathyError::DeserializeError(err)
+	}
+}
+
+impl From<FromUtf8Error> for ApathyError {
+	fn from(err: FromUtf8Error) -> Self {
+		ApathyError::StringConversionError(err)
 	}
 }
