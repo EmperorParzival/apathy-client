@@ -5,32 +5,12 @@ use utility::{multiple_roblox, request};
 use warp::Filter;
 
 async fn launch_roblox(token: String) -> Result<impl warp::Reply, warp::Rejection> {
-	let page = format!(
-		r#"
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta charset="utf-8" />
-                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-                <title>Apathy Popcorn Generator</title>
-                <script async>
-                    window.location.href = "{launch_info}"
-                </script>
-            </head>
-            <body>
-                <p>If you are not redirected, please click <a href="{launch_info}">here</a>.</p>
-            </body>
-        </html>
-        "#,
-		launch_info = match request::get_launch_info(token).await {
-			Ok(launch_info) => launch_info,
-			Err(err) => err.to_string(),
-		}
-	);
-
-	Ok(warp::reply::html(page))
+	Ok(match request::launch_roblox(token).await {
+		Ok(_) => "Success! You may now close this tab.",
+		Err(_) =>
+			"Something went wrong when trying to open Roblox. Please see the console for more \
+			 information.",
+	})
 }
 
 #[tokio::main]
