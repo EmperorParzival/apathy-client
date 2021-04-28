@@ -1,16 +1,16 @@
-os: windows
 language: rust
+os: windows
 rust:
-  - stable
-  - beta
-  - nightly
+    - stable
+    - beta
+    - nightly
 
 script:
-  - cargo build --verbose
-  - cargo test --verbose
+    - cargo build --verbose
+    - cargo test --verbose
 
 cache: cargo
 jobs:
-  allow_failures:
-    - rust: nightly
-  fast_finish: true
+    allow_failures:
+        - rust: nightly
+    fast_finish: true
