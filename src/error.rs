@@ -5,7 +5,10 @@ use hyper::{
 use std::{
 	fmt::{self, Display, Formatter},
 	string::FromUtf8Error,
+    result
 };
+
+pub type Result<T> = result::Result<T, ApathyError>;
 
 #[derive(Debug)]
 pub enum ApathyError {
