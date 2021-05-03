@@ -7,7 +7,7 @@ before_script:
     - rustup target add x86_64-pc-windows-gnu
     - rustup toolchain install stable-x86_64-pc-windows-gnu
 script:
-    - cargo build --release
+    - cargo build --target x86_64-pc-windows-gnu
 
 deploy:
     provider: releases
