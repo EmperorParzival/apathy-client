@@ -17,15 +17,18 @@ closing all but one open roblox instance.
 If you haven't heard of or aren't affiliated with Apathy's popcorn system, don't worry about it :)
 2. **Why did you switch to a new client?**
 Because my code is better.
-3. **Why can't we order popcorn from this client?**
+3. **Where do I download the client?**
+You can find the latest version on the releases tab. Alternatively, the file is also available in
+the Apathy Discord along with the virustotal.
+4. **Why can't we order popcorn from this client?**
 It's mostly a security measure. We can more easily monitor who uses which popcorn when you request
 popcorn through the bot. Additionally, we won't have to use your IP or HWID since the Discord bot
 provides us with your Discord ID.
-4. **Then what does this client even do?**
+5. **Then what does this client even do?**
 It creates a local server on your computer that serves as a bridge between Apathy's discord bot and
 your Roblox client. In short, the bot gives you a popcorn ticket which the client uses to launch a
 Roblox instance. The client also enables you to launch multiple Roblox instances.
-5. **Can I trust this client?**
+6. **Can I trust this client?**
 The source code been made fully available (see License). You also have access to the client's
 virustotal in the Apathy discord. If you are still unsure, I will be releasing documentation for
 all of this repository's code in the near future. As per the license, you may also ~~skid~~ utilize
