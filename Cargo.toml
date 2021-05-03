@@ -1,6 +1,6 @@
 [package]
 name = "apathy-client"
-version = "0.2.2"
+version = "0.2.3"
 description = "Apathy Alt Utilities"
 authors = ["EmperorParzival <29981946+EmperorParzival@users.noreply.github.com>"]
 readme = "README.md"
