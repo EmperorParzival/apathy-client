@@ -1,4 +1,4 @@
-use crate::error::ApathyError;
+use crate::error::{Result, ApathyError};
 
 use hyper::{
 	body::{self, Buf},
@@ -14,7 +14,7 @@ async fn request_header(
 	request: Request<Body>,
 	header: &str,
 	client: Client,
-) -> Result<HeaderValue, ApathyError> {
+) -> Result<HeaderValue> {
 	let response = client.request(request).await?;
 	let headers = response.headers();
 
@@ -28,7 +28,7 @@ async fn request_header(
 	}
 }
 
-async fn get_auth_ticket(cookie: String, client: Client) -> Result<HeaderValue, ApathyError> {
+async fn get_auth_ticket(cookie: String, client: Client) -> Result<HeaderValue> {
 	let csrf_token = request_header(
 		Request::builder()
 			.method(hyper::Method::POST)
@@ -64,7 +64,7 @@ struct Popcorn {
 	cookie: String,
 }
 
-pub async fn launch_roblox(token: String) -> Result<(), ApathyError> {
+pub async fn launch_roblox(token: String) -> Result<()> {
 	let https = hyper_tls::HttpsConnector::new();
 	let client = hyper::Client::builder().build::<_, Body>(https);
 
@@ -72,12 +72,7 @@ pub async fn launch_roblox(token: String) -> Result<(), ApathyError> {
 	let token_resp = client.get(hyper::Uri::from_str(&token_uri)?).await?;
 	let token: Popcorn = serde_json::from_reader(body::aggregate(token_resp).await?.reader())?;
 
-	// NOTE: assert!() causes unnecessary errors when  multiple requests?? rust?????
-	// assert!(token.success, "{}", token.error);
-
-	if !token.success {
-		return Err(ApathyError::PopcornError(token.error));
-	}
+	assert!(token.success, "{}", token.error);
 
 	let version_uri = "http://setup.roblox.com/version.txt";
 	let version_resp = client.get(hyper::Uri::from_static(version_uri)).await?;
