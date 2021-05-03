@@ -1,15 +1,24 @@
-language: rust
 os: windows
+language: rust
 rust:
     - stable
     - beta
     - nightly
 
-script:
-    - cargo build --verbose
-    - cargo test --verbose
-
 cache: cargo
+script:
+    - cargo build --release
+
+deploy:
+    provider: releases
+    api_key:
+        secure: "J5LkM8PoTqTgrdIdynNEH+oUyenf/th0pscKA1iUjef0JvrEhfc1Von++//FmL8q/q0P+xv3cdazhmNQUwJAZGN0wTPl2bWZQe95VPOyzheLrhpc9e/bj/uaVYKsRcfYRb5oxGsJT/FQaCpCZc/aYdxfBR3b3O/ZXorpjuE7gToHDtBsIQ4gOWOICrUklTmIUSQvjfqb5lKQCK2QRq5Cb4PAQnBDRPFDK8c1VS6WaEWetFggruNPr8j+5c6ibqkHfTU/2k8Lm/OX7Pkr5VIXi32sabt3BLrkeA4dCbXXrqgm8NAM4gm8Y+YfjNhKG0DshMXkaEEMReOQl+pygToC0WYKBY9g8UtUwSQ5Pp/vqSioGJ37I0jH2CZjwbVqw3yvo/zVsKajc0b3LKmoQuydemmphbCHz5A7hPEaPFK7t/z23fF4vWqW+BWP38OBY5KTb6N5RLUTV/2an5nOQ5JMxXxosYbes+y/OzLLwBIMq97bExEK5Etw0IH0qx5MQUfL5pw2y6NEXPRJOGQ908L37gaIbLKxc7f0OuTUHX3JI9W+nMvHgzfu4bBdQIBjT/G+VByNJkzyds7Sy+Ana8CmXqgtGgi+PabOcgW5xR3l45BpUL/O2v73GZmt+ggN5Dq35ooMZvIOWbX+9ZBe/RytQ2g9FVIlETeQSxS45Wyfw+k="
+    file: target/release/apathy-client.exe
+    skip_cleanup: true
+    draft: true
+    on:
+        tags: true
+
 jobs:
     allow_failures:
         - rust: nightly
