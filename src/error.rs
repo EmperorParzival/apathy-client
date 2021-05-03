@@ -4,8 +4,8 @@ use hyper::{
 };
 use std::{
 	fmt::{self, Display, Formatter},
+	result,
 	string::FromUtf8Error,
-    result
 };
 
 pub type Result<T> = result::Result<T, ApathyError>;
