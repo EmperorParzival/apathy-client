@@ -1,4 +1,4 @@
-use crate::error::{Result, ApathyError};
+use crate::error::{ApathyError, Result};
 
 use hyper::{
 	body::{self, Buf},
