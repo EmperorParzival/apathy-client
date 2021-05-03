@@ -16,6 +16,8 @@ fn is_roblox_open() -> bool {
 }
 
 fn enable_multiple_roblox() -> winnt::HANDLE {
+	println!("Holding ROBLOX_singletonMutex");
+
 	let mut default_security = minwinbase::SECURITY_ATTRIBUTES::default();
 	let mutex_name = "ROBLOX_singletonMutex"
 		.encode_utf16()
@@ -31,7 +33,7 @@ fn disable_multiple_roblox(handle: winnt::HANDLE) {
 	}
 }
 
-pub fn setup() -> Box<dyn FnOnce()> {
+pub fn start() -> Box<dyn FnOnce()> {
 	if is_roblox_open() {
 		println!("A Roblox process is open. Multiple Roblox will not be enabled.");
 
