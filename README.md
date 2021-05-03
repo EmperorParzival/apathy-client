@@ -1,4 +1,4 @@
-# Apathy Popcorn Client
+# Apathy Popcorn Client v0.2.3
 
 heya guys
 
