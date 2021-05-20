@@ -59,7 +59,7 @@ async fn get_auth_ticket(cookie: String, client: Client) -> Result<HeaderValue> 
 #[derive(serde::Deserialize)]
 struct Popcorn {
 	success: bool,
-	place_id: u32,
+	place_id: u64,
 	error: String,
 	cookie: String,
 }
